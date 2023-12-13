@@ -4,6 +4,7 @@ import { AppModule } from './app.module';
 
 async function bootstrap() {
    const path='/home/benjeddou/Desktop/nest-grpc/src/proto/service.proto'
+   /* ll */
   const app = await NestFactory.createMicroservice<MicroserviceOptions>(
     AppModule,
     {
