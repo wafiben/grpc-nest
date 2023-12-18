@@ -6,7 +6,8 @@ import {
   GrpcMethod,
   GrpcStreamMethod,
 } from '@nestjs/microservices';
-import { Observable, ReplaySubject, Subject } from 'rxjs';
+import { Observable, ReplaySubject, Subject, map, of } from 'rxjs';
+
 
 interface HeroService {
   findOne(data: HeroById): Observable<Hero>;
@@ -24,12 +25,33 @@ export class HeroeController {
   constructor(@Inject('HERO_PACKAGE') private readonly client: ClientGrpc) {}
 
   @Get(':id')
-  getById(@Param('id') id: string): Observable<Hero> {
-    return this.heroService.findOne({ id: +id });
+  getById(@Param('id') id: string): any {
+    const data: HeroById = { id: Number(id) };
+    return this.findOne(data);
   }
 
   @GrpcMethod('HeroService')
   findOne(data: HeroById): Hero {
-    return this.items.find(({ id }) => id === data.id);
+    const user = this.items.find(({ id }) => id === data.id);
+    return user;
+  }
+
+  @GrpcStreamMethod('HeroService')
+  findMany(upstream: Observable<HeroById>): Observable<Hero[]> {
+    return upstream.pipe(
+      map((data: HeroById) => {
+        const user = this.items.find(({ id }) => id === data.id);
+        return user ? [user] : [];
+      }),
+    );
+  }
+
+  @Get()
+  findAllController(): Observable<Hero[]> {
+    return this.findAll();
+  }
+
+  private findAll(): Observable<Hero[]> {
+    return of(this.items);
   }
 }
