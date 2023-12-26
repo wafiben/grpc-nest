@@ -1,21 +1,29 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { NewEnforcerRequest } from 'src/casbin/interfaces/proto/NewEnforcerRequest';
 import { CasbinClient } from 'src/casbin/interfaces/proto/Casbin';
-
+import { Observable } from 'rxjs';
 
 @Injectable()
-export class CasbinServiceClient  {
+export class CasbinServiceClient {
   private readonly client: CasbinClient;
+  casbinClient: CasbinClient;
 
-/*   newEnforcer(request: NewEnforcerRequest): Promise<any> {
-    return new Promise((resolve, reject) => {
-      this.client.newEnforcer(request, (error, response) => {
-        if (error) {
-          reject(error);
+  constructor(@Inject('CASBIN_PACKAGE') client: CasbinClient) {
+    this.casbinClient = client;
+  }
+  
+  getAllSubjects(): Observable<any> {
+    const request = {};
+
+    return new Observable((observer) => {
+      this.casbinClient.getAllNamedSubjects(request, (err, response) => {
+        if (err) {
+          observer.error(err);
         } else {
-          resolve(response);
+          observer.next(response.toObject());
+          observer.complete();
         }
       });
     });
-  } */
+  }
 }

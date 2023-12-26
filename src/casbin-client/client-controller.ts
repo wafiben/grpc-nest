@@ -3,7 +3,10 @@ import { CasbinServiceClient } from './casbin-client.service';
 
 @Controller('casbin')
 export class CasbinController {
-  constructor(private readonly casbinService: CasbinServiceClient) {}
+  constructor(private readonly casbinServiceClient: CasbinServiceClient) {}
 
-  
+  @Get('subjects')
+  getAllSubjects(): any {
+    return this.casbinServiceClient.getAllSubjects();
+  }
 }

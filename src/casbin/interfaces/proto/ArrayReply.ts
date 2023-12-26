@@ -6,5 +6,6 @@ export interface ArrayReply {
 }
 
 export interface ArrayReply__Output {
+  toObject(): any;
   'array'?: (string)[];
 }
